@@ -1,0 +1,166 @@
+# interactive_demo.py
+
+import os
+import json
+import time
+from dotenv import load_dotenv
+
+# --- LangChain Imports ---
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain.schema.document import Document
+from langchain.vectorstores.faiss import FAISS
+from typing import List
+
+# --- Load API Key ---
+load_dotenv()
+
+# --- 1. DATA MODELS (SCHEMAS) ---
+class ParsedJD(BaseModel):
+    """Data model for the parsed job description."""
+    job_title: str = Field(description="The official title of the job role.")
+    required_skills: List[str] = Field(description="A list of essential skills, tools, or technologies required for the role.")
+    preferred_skills: List[str] = Field(description="A list of skills that are preferred but not mandatory.")
+    years_of_experience: int = Field(description="The minimum number of years of professional experience required.")
+
+class GeneratedQuestion(BaseModel):
+    """Data model for a single generated interview question."""
+    type: str = Field(description="The type of question (e.g., Behavioral, Technical, System Design).")
+    difficulty: str = Field(description="The estimated difficulty (Easy, Medium, Hard).")
+    question: str = Field(description="The interview question text.")
+    rubric: str = Field(description="A brief evaluation rubric for what to look for in a good answer.")
+
+# --- 2. AI CHAIN DEFINITIONS ---
+def get_parser_chain():
+    """Returns a LangChain chain that parses a job description."""
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0, convert_system_message_to_human=True)
+    prompt_template = "From the job description, extract information into the provided schema.\n\nJob Description:\n{job_description}"
+    prompt = ChatPromptTemplate.from_template(prompt_template)
+    return prompt | llm.with_structured_output(ParsedJD)
+
+def get_generator_chain():
+    """Returns a LangChain chain that generates a new interview question."""
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0.5, convert_system_message_to_human=True)
+    prompt_template = """
+    You are an expert interviewer for a tech company.
+    Generate one high-quality interview question based on the following details:
+    Job Title: {job_title}
+    Required Skill: {skill}
+    Years of Experience: {experience}
+
+    Ensure the question is relevant for the candidate's experience level.
+    Return the question with all required metadata.
+    """
+    prompt = ChatPromptTemplate.from_template(prompt_template)
+    return prompt | llm.with_structured_output(GeneratedQuestion)
+
+# --- 3. MAIN ORCHESTRATION FUNCTION ---
+def main():
+    """Main function to run the entire interview generation and interactive flow."""
+    print("🚀 Starting Interactive Interview Generator...")
+
+    # --- Load Data ---
+    try:
+        with open("questions.json", "r") as f:
+            question_bank = json.load(f)
+    except FileNotFoundError:
+        print("❌ Error: `questions.json` not found. Please make sure the file exists in the same directory.")
+        return
+
+    # For this example, we'll use a sample JD. You can replace this with `input()` or file reading.
+    jd_text = """
+    Senior Python Developer
+
+    Company: Tech Solutions Inc.
+    Location: Remote
+
+    We are seeking a Senior Python Developer with at least 5 years of experience to join our dynamic team. The ideal candidate will be responsible for developing and maintaining our core backend services.
+
+    Required Skills:
+    - Python, Django, Flask
+    - Experience with RESTful APIs
+    - Strong understanding of SQL and database design (PostgreSQL)
+    - Git
+
+    Preferred Skills:
+    - Docker, Kubernetes
+    - Experience with AWS or other cloud platforms
+    - Knowledge of microservices architecture
+    """
+    print("\n[1/5] Parsing Job Description...")
+    parser_chain = get_parser_chain()
+    parsed_jd = parser_chain.invoke({"job_description": jd_text})
+    print(f"✅ Done. Role: {parsed_jd.job_title}, Experience: {parsed_jd.years_of_experience} years.")
+
+    # --- Setup Vector Store for Matching ---
+    print("\n[2/5] Creating Vector Store for question matching...")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    documents = [
+        Document(page_content=f"Question: {q['question']} Tags: {', '.join(q['tags'])}", metadata=q)
+        for q in question_bank
+    ]
+    vector_store = FAISS.from_documents(documents, embeddings)
+    print("✅ Done.")
+
+    interview_package = []
+    all_skills = parsed_jd.required_skills + parsed_jd.preferred_skills
+    used_question_ids = set()
+
+    # --- Find Matching Questions from Bank ---
+    print("\n[3/5] Finding relevant questions from the question bank...")
+    retriever = vector_store.as_retriever(search_kwargs={"k": 1})
+    for skill in set(all_skills):
+        retrieved_docs = retriever.invoke(skill)
+        if retrieved_docs:
+            matched_question = retrieved_docs[0].metadata
+            if matched_question['id'] not in used_question_ids:
+                interview_package.append(matched_question)
+                used_question_ids.add(matched_question['id'])
+    print(f"✅ Done. Found {len(interview_package)} questions from the bank.")
+
+    # --- Generate New, Tailored Questions ---
+    print("\n[4/5] Generating new, tailored questions...")
+    generator_chain = get_generator_chain()
+    skills_for_generation = parsed_jd.required_skills[:2]
+    for skill in skills_for_generation:
+        print(f"  -> Generating question for '{skill}'...")
+        new_question = generator_chain.invoke({
+            "job_title": parsed_jd.job_title,
+            "skill": skill,
+            "experience": parsed_jd.years_of_experience
+        })
+        interview_package.append(new_question.dict())
+    print("✅ Done.")
+
+    # --- 5. START INTERACTIVE INTERVIEW ---
+    print("\n" + "="*50)
+    print("🎉 Interview Package Generated. Starting Interactive Demo...")
+    print("="*50 + "\n")
+    time.sleep(2)
+
+    total_questions = len(interview_package)
+    for i, question_data in enumerate(interview_package):
+        print(f"--- Question {i+1} of {total_questions} ---\n")
+        print(f"  Type: {question_data.get('type', 'N/A')}")
+        print(f"  Difficulty: {question_data.get('difficulty', 'N/A')}\n")
+        print(f"  Question: {question_data['question']}\n")
+
+        # Check if a rubric exists for this question
+        if 'rubric' in question_data and question_data['rubric']:
+            input("  (Press Enter to reveal the evaluation rubric...)")
+            print("\n  --- Evaluation Rubric ---")
+            print(f"  {question_data['rubric']}")
+            print("  -------------------------\n")
+
+        if i < total_questions - 1:
+            input("\n(Press Enter for the next question...)")
+            print("\n" + "="*50 + "\n")
+        else:
+            print("\n" + "="*50)
+            print("✅ End of Interview. Good luck!")
+            print("="*50)
+
+
+if __name__ == "__main__":
+    main()

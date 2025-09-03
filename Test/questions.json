@@ -1,0 +1,51 @@
+[
+  {
+    "id": "BEH_01",
+    "type": "Behavioral",
+    "difficulty": "Medium",
+    "question": "Tell me about a time you had a conflict with a coworker. How did you handle it?",
+    "tags": ["Teamwork", "Communication", "Conflict Resolution"]
+  },
+  {
+    "id": "BEH_02",
+    "type": "Behavioral",
+    "difficulty": "Medium",
+    "question": "Describe a challenging project you worked on. What made it challenging and how did you overcome it?",
+    "tags": ["Problem Solving", "Resilience", "Project Management"]
+  },
+  {
+    "id": "PY_01",
+    "type": "Technical",
+    "difficulty": "Easy",
+    "question": "What is the difference between a list and a tuple in Python?",
+    "tags": ["Python", "Data Structures"]
+  },
+  {
+    "id": "PY_02",
+    "type": "Technical",
+    "difficulty": "Hard",
+    "question": "Explain the Global Interpreter Lock (GIL) in Python and its implications for multi-threaded programming.",
+    "tags": ["Python", "Concurrency", "Performance"]
+  },
+  {
+    "id": "DB_01",
+    "type": "Technical",
+    "difficulty": "Medium",
+    "question": "What is an SQL index and why is it important for database performance?",
+    "tags": ["SQL", "Database", "Performance", "PostgreSQL"]
+  },
+  {
+    "id": "SD_01",
+    "type": "System Design",
+    "difficulty": "Hard",
+    "question": "How would you design a URL shortening service like TinyURL?",
+    "tags": ["System Design", "Scalability", "API Design", "Microservices"]
+  },
+  {
+    "id": "CLOUD_01",
+    "type": "Technical",
+    "difficulty": "Medium",
+    "question": "What is the difference between a container (like Docker) and a virtual machine?",
+    "tags": ["Docker", "Virtualization", "Cloud", "AWS"]
+  }
+]

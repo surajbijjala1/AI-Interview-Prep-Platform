@@ -1,0 +1,33 @@
+[
+  {
+    "id": "BEH_01",
+    "type": "Behavioral",
+    "difficulty": "Medium",
+    "question": "Tell me about a time you had a conflict with a coworker.",
+    "tags": [
+      "Teamwork",
+      "Communication"
+    ]
+  },
+  {
+    "id": "PY_01",
+    "type": "Technical",
+    "difficulty": "Easy",
+    "question": "What is the difference between a list and a tuple in Python?",
+    "tags": [
+      "Python",
+      "Data Structures"
+    ]
+  },
+  {
+    "id": "DB_01",
+    "type": "Technical",
+    "difficulty": "Medium",
+    "question": "What is an SQL index and why is it important?",
+    "tags": [
+      "SQL",
+      "Database",
+      "Performance"
+    ]
+  }
+]
