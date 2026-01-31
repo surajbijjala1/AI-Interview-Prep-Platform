@@ -170,11 +170,6 @@ def get_parser_chain():
     )
 ```
 
-### Available Models
-- `gemini-1.5-pro` - Best for complex reasoning
-- `gemini-1.5-flash` - Faster, lighter version
-- `gemini-pro` - Gemini 1.0 (stable)
-
 ## 📁 Project Structure
 
 ```
@@ -199,28 +194,6 @@ AI-Interview-Prep-Platform/
 - **Recruiters**: Generate interview questions based on job descriptions
 - **Career Coaches**: Create customized interview prep materials
 - **Hiring Managers**: Standardize interview processes with AI-generated questions
-
-## Troubleshooting
-
-### Common Issues
-
-1. **API Key Expired Error**
-   ```
-   Error: 400 API key expired. Please renew the API key.
-   ```
-   **Solution**: Generate a new API key at [Google AI Studio](https://aistudio.google.com/app/apikey)
-
-2. **Model Not Found Error**
-   ```
-   Error: 404 models/gemini-pro is not found
-   ```
-   **Solution**: Run `python test_api.py` to find available models for your API key
-
-3. **Import Errors**
-   ```
-   ModuleNotFoundError: No module named 'langchain'
-   ```
-   **Solution**: Make sure you've activated the virtual environment and installed dependencies
 
 ## Contributing
 
