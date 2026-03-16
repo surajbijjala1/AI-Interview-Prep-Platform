@@ -11,7 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
 # --- Load API Key ---
 load_dotenv()
@@ -65,6 +65,15 @@ def get_generator_chain():
 
 # --- 3. RAG PIPELINE FUNCTIONS ---
 def prepare_vector_db(file_path: str):
+    persist_directory = "./chroma_db"
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+    
+    # Check if the vector database already exists on disk
+    if os.path.exists(persist_directory) and os.listdir(persist_directory):
+        print(f"\n[RAG - Vector DB] Loading existing Chroma DB from `{persist_directory}`...")
+        vector_store = Chroma(persist_directory=persist_directory, embedding_function=embeddings, collection_name="interview_context")
+        return vector_store
+
     print(f"\n[RAG - Loading] Loading context from {file_path}...")
     try:
         with open(file_path, "r") as f:
@@ -86,19 +95,24 @@ def prepare_vector_db(file_path: str):
     print("[RAG - Chunking] Splitting documents into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     splits = text_splitter.split_documents(documents)
-
-    print("[RAG - Embedding & Vector DB] Creating Chroma vector store...")
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+    print(f"✅ Done. Created {len(splits)} chunks.")
+    print(splits[0].page_content[:200] + "..." if splits else "No splits created.")
+    print("[RAG - Embedding & Vector DB] Creating and persisting Chroma vector store...")
     
-    # Using Chroma as the vector store in-memory
-    vector_store = Chroma.from_documents(documents=splits, embedding=embeddings, collection_name="interview_context")
+    # Using Chroma as the vector store and persisting to disk
+    vector_store = Chroma.from_documents(
+        documents=splits, 
+        embedding=embeddings, 
+        collection_name="interview_context",
+        persist_directory=persist_directory
+    )
     return vector_store
 
 # --- 4. MAIN ORCHESTRATION FUNCTION ---
 def main():
     print("🚀 Starting End-to-End RAG Interview Generator...")
 
-    jd_file_path = "jd_mock_1.txt"
+    jd_file_path = "jd_mock_2.txt"
     print(f"\n[0/4] Loading Job Description from {jd_file_path}...")
     try:
         with open(jd_file_path, "r") as f:
