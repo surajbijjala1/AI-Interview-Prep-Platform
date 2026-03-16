@@ -1,0 +1,23 @@
+Role: Senior Frontend Developer
+Company: TechFlow
+Location: Remote
+
+About the Role:
+We are looking for a Senior Frontend Developer with 5+ years of experience to join our team. You will be responsible for building scalable and performant web applications using modern JavaScript frameworks.
+
+Responsibilities:
+- Develop new user-facing features using React.js and Next.js.
+- Build reusable components and front-end libraries.
+- Optimize components for maximum performance across a vast array of web-capable devices and browsers.
+
+Qualifications:
+- 5+ years of experience in Frontend Development.
+- Strong proficiency in JavaScript, including DOM manipulation and the JavaScript object model.
+- Thorough understanding of React.js and its core principles.
+- Experience with popular React.js workflows (such as Flux or Redux).
+- Familiarity with newer specifications of ECMAScript (ES6+).
+- Experience with data structure libraries (e.g., Immutable.js).
+- Knowledge of modern authorization mechanisms, such as JSON Web Token.
+- Familiarity with modern front-end build pipelines and tools.
+- Experience with Next.js is highly preferred.
+- Familiarity with TypeScript is required.

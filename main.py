@@ -6,13 +6,12 @@ from typing import List, Dict
 
 
 # --- LangChain Imports ---
-# Note: The deprecation warnings are from LangChain and can be ignored for now.
-# They are updating their library structure.
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain.schema.document import Document
-from langchain.vectorstores.faiss import FAISS
+from pydantic import BaseModel, Field
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import Chroma
 
 # --- Load API Key ---
 load_dotenv()
@@ -43,108 +42,113 @@ class SkillGraph(BaseModel):
 
 # --- 2. AI CHAIN DEFINITIONS ---
 def get_parser_chain():
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0, convert_system_message_to_human=True)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0, convert_system_message_to_human=True)
     prompt = ChatPromptTemplate.from_template("From the job description, extract information into the provided schema.\n\nJob Description:\n{job_description}")
     return prompt | llm.with_structured_output(ParsedJD)
 
 def get_generator_chain():
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0.5, convert_system_message_to_human=True)
-    prompt = ChatPromptTemplate.from_template("You are an expert interviewer. Generate one high-quality question based on the following details:\nJob Title: {job_title}\nRequired Skill: {skill}\nYears of Experience: {experience}\nReturn the question with all required metadata.")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.5, convert_system_message_to_human=True)
+    prompt_template = """
+    You are an expert interviewer for a tech company.
+    Based on the following context, generate one high-quality interview question.
+    
+    Context: {context}
+    Job Title: {job_title}
+    Required Skill: {skill}
+    Years of Experience: {experience}
+    
+    Ensure the question is relevant for the candidate's experience level.
+    Return the question with all required metadata.
+    """
+    prompt = ChatPromptTemplate.from_template(prompt_template)
     return prompt | llm.with_structured_output(GeneratedQuestion)
 
-def get_skill_graph_chain():
-    """Returns a chain that categorizes a list of skills using the corrected model."""
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0, convert_system_message_to_human=True)
-    prompt = ChatPromptTemplate.from_template(
-        "You are a tech skills taxonomist. Categorize the following list of skills into a list of logical groups. "
-        "Each group should have a category name and a list of the corresponding skills from the input list. "
-        "For example: 'Programming Language', 'Web Framework', 'Database', 'Cloud Platform', 'DevOps Tools', etc. "
-        "\n\nSkills:\n{skill_list}"
-    )
-    return prompt | llm.with_structured_output(SkillGraph)
-
-# --- 3. MAIN ORCHESTRATION FUNCTION ---
-def main():
-    print("🚀 Starting Full-Featured Interview Generator...")
-
-    question_file = "questions_crawled.json"
+# --- 3. RAG PIPELINE FUNCTIONS ---
+def prepare_vector_db(file_path: str):
+    print(f"\n[RAG - Loading] Loading context from {file_path}...")
     try:
-        with open(question_file, "r") as f:
-            question_bank = json.load(f)
-        print(f"Successfully loaded {len(question_bank)} questions from `{question_file}`.")
+        with open(file_path, "r") as f:
+            if file_path.endswith('.json'):
+                data = json.load(f)
+                documents = [
+                    Document(
+                        page_content=f"Question: {q['question']}\nTags: {', '.join(q['tags'])}\nType: {q.get('type', '')}\nDifficulty: {q.get('difficulty', '')}",
+                        metadata={"id": q.get("id", ""), "source": file_path}
+                    ) for q in data
+                ]
+            else:
+                text = f.read()
+                documents = [Document(page_content=text, metadata={"source": file_path})]
     except FileNotFoundError:
-        print(f"❌ Error: `{question_file}` not found. Please run `python crawler.py` first.")
-        return
+        print(f"❌ Error: `{file_path}` not found.")
+        return None
 
-    jd_text = """
-    We create AI solutions to help people navigate and rise above barriers. 
+    print("[RAG - Chunking] Splitting documents into chunks...")
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    splits = text_splitter.split_documents(documents)
 
-
-
-Role Description
-
-This is a 6-month unpaid Software Engineer internship opportunity at High Tide. The Software Engineer Intern will be responsible for assisting in the development and maintenance of full-stack AI applications. Daily tasks will include debugging and testing software, collaborating with team members to optimize code, designing core systems, and participating in code reviews.
-
-
-Qualifications
-
-Experience in Software Development and AI (LLMs, Agentic AI, Prompt Engineering)
-Proficiency in Object-Oriented Programming (OOP) and DSA
-Strong problem-solving skills and ability to learn new technologies quickly
-Excellent written and verbal communication skills
-Ability to work independently and as part of a team
-Currently pursuing or recently completed a degree in Computer Science or Data Science; or recent CS/AI Bootcamp Grad
-    """
+    print("[RAG - Embedding & Vector DB] Creating Chroma vector store...")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
     
-    print("\n[1/7] Parsing Job Description...")
+    # Using Chroma as the vector store in-memory
+    vector_store = Chroma.from_documents(documents=splits, embedding=embeddings, collection_name="interview_context")
+    return vector_store
+
+# --- 4. MAIN ORCHESTRATION FUNCTION ---
+def main():
+    print("🚀 Starting End-to-End RAG Interview Generator...")
+
+    jd_file_path = "jd_mock_1.txt"
+    print(f"\n[0/4] Loading Job Description from {jd_file_path}...")
+    try:
+        with open(jd_file_path, "r") as f:
+            jd_text = f.read()
+    except FileNotFoundError:
+        print(f"❌ Error: `{jd_file_path}` not found.")
+        return
+    
+    print("\n[1/4] Parsing Job Description...")
     parsed_jd = get_parser_chain().invoke({"job_description": jd_text})
     print(f"✅ Done. Role: {parsed_jd.job_title}, Experience: {parsed_jd.years_of_experience} years.")
 
-    print("\n[2/7] Building Role-Specific Skill Graph...")
-    all_skills = parsed_jd.required_skills + parsed_jd.preferred_skills
-    skill_graph_result = get_skill_graph_chain().invoke({"skill_list": ", ".join(all_skills)})
-    print("✅ Done. Skill Ontology Generated:")
-    # --- CORRECTED PRINTING LOGIC ---
-    for category_obj in skill_graph_result.graph:
-        print(f"  - {category_obj.category_name}:")
-        for skill in category_obj.skills:
-            print(f"    - {skill}")
+    # Execute RAG Pipeline components (Load, Chunk, Embed)
+    vector_store = prepare_vector_db("questions_crawled.json")
+    if not vector_store:
+        return
     
-    print("\n[3/7] Creating Vector Store for question matching...")
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    documents = [Document(page_content=f"Question: {q['question']} Tags: {', '.join(q['tags'])}", metadata=q) for q in question_bank]
-    vector_store = FAISS.from_documents(documents, embeddings)
-    print("✅ Done.")
+    retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 2})
 
     interview_package = []
-    used_question_ids = set()
+    # Take up to 3 required skills to generate questions for
+    skills_for_generation = parsed_jd.required_skills[:3]
 
-    print("\n[4/7] Finding relevant questions from the question bank...")
-    retriever = vector_store.as_retriever(search_kwargs={"k": 1})
-    for skill in set(all_skills):
-        retrieved_docs = retriever.invoke(skill)
-        if retrieved_docs:
-            matched_question = retrieved_docs[0].metadata
-            if matched_question['id'] not in used_question_ids:
-                interview_package.append(matched_question)
-                used_question_ids.add(matched_question['id'])
-    print(f"✅ Done. Found {len(interview_package)} relevant questions.")
-    
-    print("\n[5/7] Generating new, tailored questions...")
-    skills_for_generation = parsed_jd.required_skills[:2]
+    print("\n[2/4] Executing RAG (Retrieval + Generation)...")
+    generator_chain = get_generator_chain()
+
     for skill in skills_for_generation:
-        print(f"  -> Generating question for '{skill}'...")
-        new_question = get_generator_chain().invoke({"job_title": parsed_jd.job_title, "skill": skill, "experience": parsed_jd.years_of_experience})
-        interview_package.append(new_question.dict())
+        print(f"  -> Generating RAG question for '{skill}'...")
+        
+        # [RAG - Augmenting] Retrieve relevant context from DB
+        retrieved_docs = retriever.invoke(skill)
+        context_text = "\n\n".join([doc.page_content for doc in retrieved_docs])
+        
+        # [RAG - Generating] Pass enriched context to the LLM
+        new_question = generator_chain.invoke({
+            "context": context_text,
+            "job_title": parsed_jd.job_title,
+            "skill": skill,
+            "experience": parsed_jd.years_of_experience
+        })
+        interview_package.append(new_question.model_dump())
+
     print("✅ Done.")
 
-    print("\n[6/7] Finalizing interview package...")
+    print("\n[3/4] Starting Interactive Demo...")
     time.sleep(1)
 
     print("\n" + "="*50)
-    print("🎉 Interview Package Generated. Starting Interactive Demo...")
+    print("🎉 RAG Interview Package Generated")
     print("="*50 + "\n")
-    time.sleep(2)
 
     total_questions = len(interview_package)
     for i, question_data in enumerate(interview_package):

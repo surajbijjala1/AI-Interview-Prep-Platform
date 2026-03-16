@@ -4,17 +4,16 @@ An intelligent AI-powered interview preparation system that generates customized
 
 ## Overview
 
-This platform uses advanced AI techniques including **Retrieval-Augmented Generation (RAG)**, **semantic search**, and **structured output generation** to create personalized interview questions tailored to specific job requirements. It combines pre-existing questions from a crawled database with dynamically generated questions to provide comprehensive interview preparation.
+This platform uses an **End-to-End Retrieval-Augmented Generation (RAG)** pipeline—including document loading, chunking, embedding, and generation—to create personalized interview questions tailored to specific job requirements. It uses an in-memory Chroma vector database to combine pre-existing questions from a crawled repository with dynamically generated AI context.
 
 ## Features
 
-- **AI-Powered Job Description Parser**: Extracts key information (skills, experience, responsibilities) from unstructured job descriptions
-- **Intelligent Skill Categorization**: Automatically groups skills into logical categories (Programming Languages, Frameworks, Cloud Platforms, etc.)
-- **Semantic Question Matching**: Uses vector embeddings and FAISS to find relevant questions based on meaning, not just keywords
-- **Dynamic Question Generation**: Creates custom interview questions tailored to specific roles and experience levels
-- **Hybrid Approach**: Combines pre-existing questions with AI-generated content for comprehensive coverage
-- **Interactive Interview Mode**: Step-by-step question presentation with evaluation rubrics
-- **Web Scraping**: Automated question bank building from structured HTML sources
+- **End-to-End RAG Pipeline**: Implements the full RAG lifecycle (Loading, Chunking, Embedding, Retrieving, Generating).
+- **AI-Powered Job Description Parser**: Extracts key information (skills, experience, responsibilities) from unstructured job descriptions.
+- **Local Vector Database**: Uses **ChromaDB** for fast, local semantic search without requiring additional API limits.
+- **Dynamic Question Generation**: Creates custom interview questions tailored to specific roles and experience levels based on the retrieved context.
+- **Interactive Interview Mode**: Step-by-step question presentation with hidden evaluation rubrics.
+- **Web Scraping**: Automated question bank building from structured HTML sources.
 
 ## Architecture
 
@@ -25,22 +24,23 @@ This platform uses advanced AI techniques including **Retrieval-Augmented Genera
    - Stores questions with metadata (type, difficulty, tags)
    - Outputs to `questions_crawled.json`
 
-2. **`parser.py`** - Job Description Analyzer
+2. **`parser.py`** - Job Description Analyzer Demo
    - Parses unstructured job descriptions
-   - Extracts structured data using Gemini AI
-   - Returns: job title, required/preferred skills, experience level, responsibilities
+   - Extracts structured data using Gemini AI via Pydantic schemas
 
-3. **`main.py`** - Main Orchestrator
-   - 7-step interview generation pipeline
-   - Integrates parsing, matching, and generation
-   - Provides interactive interview experience
+3. **`main.py`** - Main Orchestrator (RAG Pipeline)
+   - Executes the end-to-end RAG pipeline
+   - Chunks question banks using `RecursiveCharacterTextSplitter`
+   - Embeds and stores context in ChromaDB
+   - Generates questions by augmenting prompts with retrieved context
+   - Provides an interactive interview experience
 
 ### Technology Stack
 
-- **LangChain**: AI chain orchestration and prompt management
-- **Google Gemini AI**: Large language model for parsing and generation
-- **FAISS**: Facebook's vector similarity search library
-- **Pydantic**: Data validation and schema enforcement
+- **LangChain**: AI chain orchestration and RAG pipeline management
+- **Google Gemini AI**: Large language models (`gemini-2.5-flash` / `gemini-2.5-pro`) for parsing, generation, and embeddings
+- **ChromaDB**: Local vector store for document embeddings and semantic search
+- **Pydantic**: Data validation and strict schema enforcement
 - **BeautifulSoup**: HTML parsing for web scraping
 - **Python-dotenv**: Environment variable management
 
@@ -69,7 +69,7 @@ This platform uses advanced AI techniques including **Retrieval-Augmented Genera
 
 3. **Install dependencies**
    ```bash
-   pip install -r requirements.txt
+   pip install langchain langchain-google-genai pydantic python-dotenv beautifulsoup4 requests chromadb langchain-text-splitters langchain-community
    ```
 
 4. **Set up environment variables**
@@ -88,7 +88,7 @@ This platform uses advanced AI techniques including **Retrieval-Augmented Genera
    python crawler.py
    ```
 
-2. **Run the interview generator**
+2. **Run the RAG interview generator**
    ```bash
    python main.py
    ```
@@ -100,29 +100,23 @@ This platform uses advanced AI techniques including **Retrieval-Augmented Genera
 
 ## How It Works
 
-### 7-Step Pipeline
+### 4-Step RAG Pipeline
 
 ```
-Step 1: Parse Job Description
-   ↓ Extract structured data (skills, experience, etc.)
+[1/4] Parse Job Description
+   ↓ Extract structured data (skills, experience, etc.) using Gemini LLM.
    
-Step 2: Build Skill Graph
-   ↓ Categorize skills into logical groups
+[2/4] Prepare Vector DB (Load, Chunk, Embed)
+   ↓ Parse `questions_crawled.json` into LangChain Documents.
+   ↓ Split documents using RecursiveCharacterTextSplitter.
+   ↓ Embed chunks and store them in an in-memory ChromaDB.
    
-Step 3: Create Vector Store
-   ↓ Generate embeddings for semantic search
+[3/4] Execute RAG (Retrieve + Generate)
+   ↓ Retrieve the most relevant chunked context for the highly ranked required skills.
+   ↓ Pass enriched context to the Generator Chain to construct highly accurate, tailored questions.
    
-Step 4: Match Existing Questions
-   ↓ Find relevant questions from database
-   
-Step 5: Generate New Questions
-   ↓ Create custom questions for specific skills
-   
-Step 6: Finalize Package
-   ↓ Combine matched + generated questions
-   
-Step 7: Interactive Demo
-   ↓ Present questions with evaluation rubrics
+[4/4] Interactive Demo
+   ↓ Present the AI-generated interview package to the user sequentially, revealing rubrics on demand.
 ```
 
 ## Data Models
@@ -135,13 +129,11 @@ Step 7: Interactive Demo
 - years_of_experience: int
 ```
 
-### Question Schema
+### Generated Question Schema
 ```python
-- id: str
 - type: str  # Behavioral, Technical, System Design
 - difficulty: str  # Easy, Medium, Hard
 - question: str
-- tags: List[str]
 - rubric: str  # Evaluation criteria
 ```
 
@@ -149,12 +141,10 @@ Step 7: Interactive Demo
 
 ### Customizing the Job Description
 
-Edit the `jd_text` variable in `main.py` (around line 64) to test with different job postings:
+Edit the `jd_file_path` variable in `main.py` to point to a different text file (e.g., `jd_mock_2.txt`):
 
 ```python
-jd_text = """
-Your job description here...
-"""
+jd_file_path = "jd_mock_2.txt"
 ```
 
 ### Adjusting Model Parameters
@@ -165,60 +155,43 @@ You can modify the AI models and parameters in the chain functions:
 # In main.py
 def get_parser_chain():
     llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-pro",  # Change model here
-        temperature=0,            # Adjust creativity (0-1)
+        model="gemini-2.5-flash",  # Change model here
+        temperature=0,             # Adjust creativity (0-1)
     )
 ```
+
+### Available Models
+- `gemini-2.5-pro` - Best for complex reasoning
+- `gemini-2.5-flash` - Faster, lighter version
+- `gemini-1.5-flash` - Older legacy lightweight model
 
 ## 📁 Project Structure
 
 ```
 AI-Interview-Prep-Platform/
 │
-├── main.py                    # Main orchestrator (7-step pipeline)
-├── crawler.py                 # Web scraper for question bank
-├── parser.py                  # Job description parser demo
+├── main.py                   # Main RAG orchestrator
+├── crawler.py                # Web scraper for question bank baseline
+├── parser.py                 # Job description parser implementation
 ├── questions_crawled.json    # Scraped question database
-├── .env                      # Environment variables (API keys)
+├── jd_mock_1.txt             # Sample Job Description 1
+├── jd_mock_2.txt             # Sample Job Description 2
+├── .env                      # Environment variables
 ├── README.md                 # This file
 │
 └── Test/                     # Development/testing files
-    ├── demo.py               # Earlier version of main
-    ├── demo3.py              # Another iteration
+    ├── demo.py               # Earlier matching build
+    ├── demo3.py              # Intermediate development iteration
     └── questions.json        # Test question bank
 ```
 
-## Use Cases
+## Troubleshooting
 
-- **Job Seekers**: Practice for interviews with role-specific questions
-- **Recruiters**: Generate interview questions based on job descriptions
-- **Career Coaches**: Create customized interview prep materials
-- **Hiring Managers**: Standardize interview processes with AI-generated questions
+1. **Model Not Found Error**
+   - Ensure you are using `gemini-2.5-flash` or newer. Some keys do not have access to older 1.5 versions.
+   
+2. **Pydantic Validation Errors**
+   - Ensure you have the `pydantic` package installed and are not using the deprecated Langchain wrappers. Use `.model_dump()` instead of `.dict()`.
 
-## Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest new features
-- Submit pull requests
-- Improve documentation
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Acknowledgments
-
-- Google Gemini AI for powerful language model capabilities
-- LangChain for excellent AI orchestration framework
-- FAISS for efficient vector similarity search
-
-## Contact
-
-**Suraj Bijjala**
-- GitHub: [@surajbijjala1](https://github.com/surajbijjala1)
-
----
-If you found this project helpful, please consider giving it a star!
-
-**Built with ❤️ using AI and Python**
+3. **ChromaDB Issues**
+   - Make sure `langchain-community` and `chromadb` are installed. The DB runs in-memory and regenerates on each execution.

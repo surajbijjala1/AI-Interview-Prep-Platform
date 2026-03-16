@@ -1,0 +1,21 @@
+Role: Backend Software Engineer
+Company: DataSync Inc.
+Location: New York, NY (Hybrid)
+
+About the Role:
+DataSync Inc. is seeking a talented Backend Software Engineer to help build our next-generation data processing pipelines. You will work closely with data scientists and frontend engineers to deliver robust solutions.
+
+Responsibilities:
+- Design, build, and maintain scalable server-side applications.
+- Develop RESTful APIs and microservices.
+- Ensure the performance, quality, and responsiveness of applications.
+
+Requirements:
+- 3+ years of experience in backend development.
+- Proficient in Python and Django or FastAPI.
+- Solid understanding of relational databases (PostgreSQL, MySQL).
+- Experience with building and consuming RESTful APIs.
+- Familiarity with containerization technologies like Docker and Kubernetes.
+- Knowledge of cloud platforms, ideally AWS or GCP.
+- Understanding of messaging queues like RabbitMQ or Kafka is a plus.
+- Good knowledge of Git.

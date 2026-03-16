@@ -1,9 +1,8 @@
-
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 # Load the API key from the .env file
@@ -19,8 +18,8 @@ class ParsedJD(BaseModel):
     key_responsibilities: List[str] = Field(description="A list of the primary responsibilities for this role.")
 
 # 2. Define our LLM
-# We use GPT-4o for its strong reasoning and JSON output capabilities.
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0, convert_system_message_to_human=True)
+# We use gemini-2.5-flash since the older models are inaccessible/deprecated for your API key.
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0, convert_system_message_to_human=True)
 
 # 3. Create the prompt template
 prompt_template = """
@@ -72,4 +71,4 @@ if __name__ == "__main__":
     
     # Print the result in a readable format
     import json
-    print(json.dumps(parsed_result.dict(), indent=2))
+    print(json.dumps(parsed_result.model_dump(), indent=2))
