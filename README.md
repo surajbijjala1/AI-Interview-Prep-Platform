@@ -1,197 +1,72 @@
 # AI Interview Prep Platform
 
-An intelligent AI-powered interview preparation system that generates customized interview questions based on job descriptions using Google's Gemini AI and LangChain.
+Upload your resume and a job description. The agent researches the company's interview process on the public web,
+then runs an adaptive, graded mock interview one question at a time.
 
-## Overview
+A learning project for **RAG, LangChain/LangGraph, LangSmith and MCP**, built in phases on free tiers only.
+The full design is in [docs/SPEC.md](docs/SPEC.md). Per-phase walkthroughs are in [docs/learning/](docs/learning/).
 
-This platform uses an **End-to-End Retrieval-Augmented Generation (RAG)** pipeline—including document loading, chunking, embedding, and generation—to create personalized interview questions tailored to specific job requirements. It uses an in-memory Chroma vector database to combine pre-existing questions from a crawled repository with dynamically generated AI context.
+| Phase | Status |
+|---|---|
+| 1. Foundation: config, model switch, PII redaction, resume/JD parsing, Setup page | ✅ |
+| 2. Custom MCP server + RAG question bank | ⏳ |
+| 3. Research agent (Tavily / Fetch / DuckDuckGo MCP) | ⏳ |
+| 4. LangGraph interview loop | ⏳ |
+| 5. Grading, report, memory | ⏳ |
+| 6. LangSmith evals + polish | ⏳ |
 
-## Features
+## Getting started
 
-- **End-to-End RAG Pipeline**: Implements the full RAG lifecycle (Loading, Chunking, Embedding, Retrieving, Generating).
-- **AI-Powered Job Description Parser**: Extracts key information (skills, experience, responsibilities) from unstructured job descriptions.
-- **Local Vector Database**: Uses **ChromaDB** for fast, local semantic search without requiring additional API limits.
-- **Dynamic Question Generation**: Creates custom interview questions tailored to specific roles and experience levels based on the retrieved context.
-- **Interactive Interview Mode**: Step-by-step question presentation with hidden evaluation rubrics.
-- **Web Scraping**: Automated question bank building from structured HTML sources.
+Requires Python 3.12 and [uv](https://docs.astral.sh/uv/).
 
-## Architecture
-
-### Core Components
-
-1. **`crawler.py`** - Question Bank Builder
-   - Scrapes interview questions from web sources
-   - Stores questions with metadata (type, difficulty, tags)
-   - Outputs to `questions_crawled.json`
-
-2. **`parser.py`** - Job Description Analyzer Demo
-   - Parses unstructured job descriptions
-   - Extracts structured data using Gemini AI via Pydantic schemas
-
-3. **`main.py`** - Main Orchestrator (RAG Pipeline)
-   - Executes the end-to-end RAG pipeline
-   - Chunks question banks using `RecursiveCharacterTextSplitter`
-   - Embeds and stores context in ChromaDB
-   - Generates questions by augmenting prompts with retrieved context
-   - Provides an interactive interview experience
-
-### Technology Stack
-
-- **LangChain**: AI chain orchestration and RAG pipeline management
-- **Google Gemini AI**: Large language models (`gemini-2.5-flash` / `gemini-2.5-pro`) for parsing, generation, and embeddings
-- **ChromaDB**: Local vector store for document embeddings and semantic search
-- **Pydantic**: Data validation and strict schema enforcement
-- **BeautifulSoup**: HTML parsing for web scraping
-- **Python-dotenv**: Environment variable management
-
-## Getting Started
-
-### Prerequisites
-
-- Python 3.11+
-- Google AI Studio API Key ([Get one here](https://aistudio.google.com/app/apikey))
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/surajbijjala1/AI-Interview-Prep-Platform.git
-   cd AI-Interview-Prep-Platform
-   ```
-
-2. **Create and activate virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On macOS/Linux
-   # or
-   venv\Scripts\activate  # On Windows
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install langchain langchain-google-genai pydantic python-dotenv beautifulsoup4 requests chromadb langchain-text-splitters langchain-community
-   ```
-
-4. **Set up environment variables**
-   
-   Create a `.env` file in the root directory:
-   ```env
-   GOOGLE_API_KEY='your-google-ai-studio-api-key-here'
-   ```
-
-   **Important**: Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
-
-### Usage
-
-1. **Build the question bank** (first time only)
-   ```bash
-   python crawler.py
-   ```
-
-2. **Run the RAG interview generator**
-   ```bash
-   python main.py
-   ```
-
-3. **Test your API key** (optional)
-   ```bash
-   python test_api.py
-   ```
-
-## How It Works
-
-### 4-Step RAG Pipeline
-
-```
-[1/4] Parse Job Description
-   ↓ Extract structured data (skills, experience, etc.) using Gemini LLM.
-   
-[2/4] Prepare Vector DB (Load, Chunk, Embed)
-   ↓ Parse `questions_crawled.json` into LangChain Documents.
-   ↓ Split documents using RecursiveCharacterTextSplitter.
-   ↓ Embed chunks and store them in an in-memory ChromaDB.
-   
-[3/4] Execute RAG (Retrieve + Generate)
-   ↓ Retrieve the most relevant chunked context for the highly ranked required skills.
-   ↓ Pass enriched context to the Generator Chain to construct highly accurate, tailored questions.
-   
-[4/4] Interactive Demo
-   ↓ Present the AI-generated interview package to the user sequentially, revealing rubrics on demand.
+```bash
+uv sync
 ```
 
-## Data Models
-
-### Job Description Schema
-```python
-- job_title: str
-- required_skills: List[str]
-- preferred_skills: List[str]
-- years_of_experience: int
+```bash
+cp .env.example .env
 ```
 
-### Generated Question Schema
-```python
-- type: str  # Behavioral, Technical, System Design
-- difficulty: str  # Easy, Medium, Hard
-- question: str
-- rubric: str  # Evaluation criteria
+Fill in `GOOGLE_API_KEY` (from a free-tier [AI Studio](https://aistudio.google.com/app/apikey) project) and, for
+tracing, `LANGSMITH_API_KEY`. Then:
+
+```bash
+uv run streamlit run app/Home.py
 ```
 
-## 🔧 Configuration
+The Home page shows which services are configured.
 
-### Customizing the Job Description
+### Running on a local model
 
-Edit the `jd_file_path` variable in `main.py` to point to a different text file (e.g., `jd_mock_2.txt`):
+Set `LLM_PROVIDER=ollama` in `.env` (default model `llama3.2`) and start Ollama:
 
-```python
-jd_file_path = "jd_mock_2.txt"
+```bash
+ollama serve
 ```
 
-### Adjusting Model Parameters
+Local 3B models are noticeably weaker. For example, they often miss the company name, which is why the Setup page
+asks you to confirm it.
 
-You can modify the AI models and parameters in the chain functions:
+### Tests
 
-```python
-# In main.py
-def get_parser_chain():
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",  # Change model here
-        temperature=0,             # Adjust creativity (0-1)
-    )
+No network or API quota needed:
+
+```bash
+uv run pytest
 ```
 
-### Available Models
-- `gemini-2.5-pro` - Best for complex reasoning
-- `gemini-2.5-flash` - Faster, lighter version
-- `gemini-1.5-flash` - Older legacy lightweight model
+## Privacy
 
-## 📁 Project Structure
+Your name, email, phone, links and street address are removed from the resume **before** any text reaches a model
+or a LangSmith trace. The Setup page shows exactly what the AI sees. The uploaded PDF is never written to disk.
+Tests use fictional personas only.
+
+## Project layout
 
 ```
-AI-Interview-Prep-Platform/
-│
-├── main.py                   # Main RAG orchestrator
-├── crawler.py                # Web scraper for question bank baseline
-├── parser.py                 # Job description parser implementation
-├── questions_crawled.json    # Scraped question database
-├── jd_mock_1.txt             # Sample Job Description 1
-├── jd_mock_2.txt             # Sample Job Description 2
-├── .env                      # Environment variables
-├── README.md                 # This file
-│
-└── Test/                     # Development/testing files
-    ├── demo.py               # Earlier matching build
-    ├── demo3.py              # Intermediate development iteration
-    └── questions.json        # Test question bank
+app/                    Streamlit UI (Home + pages/)
+src/interview_prep/     config, llm (provider switch), schemas, ingest/ (pdf, redact, resume, jd)
+tests/                  pytest with fake LLMs; fixtures/ holds synthetic JDs
+docs/                   SPEC.md, learning/phase-N.md
+playground/             your local scratch space (gitignored)
 ```
-
-## Troubleshooting
-
-1. **Model Not Found Error**
-   - Ensure you are using `gemini-2.5-flash` or newer. Some keys do not have access to older 1.5 versions.
-   
-2. **Pydantic Validation Errors**
-   - Ensure you have the `pydantic` package installed and are not using the deprecated Langchain wrappers. Use `.model_dump()` instead of `.dict()`.
-
-3. **ChromaDB Issues**
-   - Make sure `langchain-community` and `chromadb` are installed. The DB runs in-memory and regenerates on each execution.
