@@ -1,5 +1,7 @@
 # AI Interview Prep Platform
 
+[![Tests](https://github.com/surajbijjala1/AI-Interview-Prep-Platform/actions/workflows/tests.yml/badge.svg)](https://github.com/surajbijjala1/AI-Interview-Prep-Platform/actions/workflows/tests.yml)
+
 Upload your resume and a job description. The agent researches the company's interview process on the public web,
 then runs an adaptive, graded mock interview one question at a time.
 
@@ -49,7 +51,8 @@ asks you to confirm it.
 
 ### Tests
 
-No network or API quota needed:
+No network or API quota needed. GitHub Actions runs the same suite on every pull request and on pushes to `main`
+([.github/workflows/tests.yml](.github/workflows/tests.yml)):
 
 ```bash
 uv run pytest
