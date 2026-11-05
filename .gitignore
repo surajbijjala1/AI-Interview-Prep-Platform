@@ -1,6 +1,21 @@
+# secrets
 .env
+
+# environments
 venv/
+.venv/
+
+# python
 __pycache__/
 *.pyc
-.DS_Store
+.pytest_cache/
+
+# local app data (sessions, vectors, research cache)
+.data/
 chroma_db/
+
+# personal scratch space: experiments, real resume
+playground/
+
+# os
+.DS_Store

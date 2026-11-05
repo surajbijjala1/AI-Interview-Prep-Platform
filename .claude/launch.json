@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "streamlit",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "streamlit", "run", "app/Home.py", "--server.headless", "true", "--server.port", "8501"],
+      "port": 8501
+    },
+    {
+      "name": "streamlit-ollama",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["LLM_PROVIDER=ollama", "uv", "run", "streamlit", "run", "app/Home.py", "--server.headless", "true", "--server.port", "8502"],
+      "port": 8502
+    }
+  ]
+}
