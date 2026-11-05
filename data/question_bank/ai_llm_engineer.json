@@ -1,0 +1,227 @@
+[
+  {
+    "id": "ai-001",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["tokenization", "context window", "llm fundamentals"],
+    "question": "What is a token, and why does the context window matter when building an LLM application?",
+    "what_good_looks_like": "Tokens are subword units (roughly 3-4 characters of English); the window caps prompt plus output; affects cost, latency and how much retrieved context fits. Mentions quality loss in very long contexts."
+  },
+  {
+    "id": "ai-002",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["sampling", "temperature", "llm fundamentals"],
+    "question": "What do temperature and top-p do, and how would you set them for extraction versus creative writing?",
+    "what_good_looks_like": "Temperature scales the probability distribution; top-p samples from the smallest set covering p probability mass. Low or zero for extraction and classification, higher for ideation. Notes that low temperature does not guarantee determinism."
+  },
+  {
+    "id": "ai-003",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["embeddings", "similarity search", "rag"],
+    "question": "What are embeddings, and how is similarity between two texts measured?",
+    "what_good_looks_like": "Dense vectors where semantic similarity maps to geometric closeness; cosine similarity or dot product; embeddings from different models are not comparable; query and document embeddings must use the same model."
+  },
+  {
+    "id": "ai-004",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["rag", "chunking", "retrieval"],
+    "question": "How do you choose a chunking strategy for a RAG system?",
+    "what_good_looks_like": "Balances chunk size (enough context versus retrieval precision), uses document structure (headings, sections), overlap, metadata for filtering and citation, and evaluates choices with retrieval metrics rather than intuition."
+  },
+  {
+    "id": "ai-005",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["retrieval evaluation", "recall@k", "evals"],
+    "question": "How would you measure whether the retrieval step of a RAG system is working?",
+    "what_good_looks_like": "A labeled set of queries with relevant documents; recall@k, precision@k, MRR or nDCG; separates retrieval failures from generation failures; tracks metrics across changes to chunking, embeddings or k."
+  },
+  {
+    "id": "ai-006",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["hybrid search", "reranking", "bm25"],
+    "question": "When does pure vector search fall short, and how do hybrid search and reranking help?",
+    "what_good_looks_like": "Vector search misses exact terms (IDs, error codes, rare names); hybrid combines BM25 with vectors (for example reciprocal rank fusion); a cross-encoder reranker improves the top results at extra latency."
+  },
+  {
+    "id": "ai-007",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["hallucination", "grounding", "citations"],
+    "question": "How do you reduce hallucinations in an LLM feature that answers questions from company documents?",
+    "what_good_looks_like": "Ground answers in retrieved context, instruct the model to answer only from it and say when it doesn't know, require citations, check faithfulness with evals, and improve retrieval since bad context causes many hallucinations."
+  },
+  {
+    "id": "ai-008",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 3,
+    "topics": ["prompt injection", "security", "agents"],
+    "question": "What is prompt injection, and how would you defend an agent that reads web pages and can call tools?",
+    "what_good_looks_like": "Untrusted content containing instructions; no complete fix, so layered defenses: treat tool outputs as data, least-privilege tools, human confirmation for side effects, separating trusted and untrusted context, output filtering, and monitoring."
+  },
+  {
+    "id": "ai-009",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["tool calling", "function calling", "agents"],
+    "question": "How does tool or function calling work with an LLM, from the model's output to the final answer?",
+    "what_good_looks_like": "Tools are described with names and JSON schemas; the model returns a structured call; the application executes it and returns the result as a message; the loop continues until a final answer. The model never runs code itself."
+  },
+  {
+    "id": "ai-010",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["agents", "workflows", "architecture"],
+    "question": "When would you build a fixed workflow or chain instead of an autonomous agent?",
+    "what_good_looks_like": "Workflows when steps are known: more predictable, cheaper and testable. Agents when the path depends on intermediate results. Mentions state machines like LangGraph as a middle ground, plus step limits and observability."
+  },
+  {
+    "id": "ai-011",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["evals", "llm-as-judge"],
+    "question": "How would you use an LLM as a judge to evaluate outputs, and what are its pitfalls?",
+    "what_good_looks_like": "Clear rubric, pairwise or graded scoring, reference answers when possible; pitfalls include position and verbosity bias, self-preference and drift. Calibrate against human labels and use deterministic checks where they suffice."
+  },
+  {
+    "id": "ai-012",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["fine-tuning", "rag", "prompting"],
+    "question": "How do you decide between prompt engineering, RAG and fine-tuning for a new use case?",
+    "what_good_looks_like": "Prompting first; RAG for knowledge that changes or must be cited; fine-tuning for format, style, or narrow behavior at scale and lower cost per call. Considers data availability, maintenance and evaluation for each."
+  },
+  {
+    "id": "ai-013",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["structured output", "json schema", "validation"],
+    "question": "How do you get reliable structured data, such as JSON, out of an LLM?",
+    "what_good_looks_like": "Use native structured output or tool calling with a schema, validate with Pydantic or similar, retry or repair on failure, keep schemas simple with clear field descriptions, and handle missing values explicitly."
+  },
+  {
+    "id": "ai-014",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["cost optimization", "latency", "caching"],
+    "question": "An LLM feature is too slow and too expensive. What levers do you have?",
+    "what_good_looks_like": "Smaller or routed models, prompt trimming, prompt and response caching, batching, streaming for perceived latency, fewer agent steps, parallel calls, and measuring quality so savings don't silently degrade results."
+  },
+  {
+    "id": "ai-015",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["guardrails", "pii", "safety"],
+    "question": "How would you keep personal data out of prompts, logs and traces in an LLM application?",
+    "what_good_looks_like": "Redact or tokenize PII before model calls, minimize what is sent, control trace and log retention, check vendor data terms, test redaction deterministically, and monitor for leaks."
+  },
+  {
+    "id": "ai-016",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["observability", "tracing", "debugging"],
+    "question": "How do you debug an LLM application that gives a bad answer only sometimes?",
+    "what_good_looks_like": "Traces of every step (prompts, retrieved chunks, tool calls, outputs), reproducing with the logged inputs, checking whether retrieval or generation failed, then adding the case to an eval set to prevent regressions."
+  },
+  {
+    "id": "ai-017",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 3,
+    "topics": ["vector database", "hnsw", "ann"],
+    "question": "How do approximate nearest neighbor indexes such as HNSW work, and what trade-offs do their parameters control?",
+    "what_good_looks_like": "Layered proximity graph searched greedily from coarse to fine; parameters such as M and ef trade recall against memory and latency; approximate means some true neighbors can be missed; filtering can interact badly with the index."
+  },
+  {
+    "id": "ai-018",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["memory", "conversation", "context management"],
+    "question": "How would you manage context for a long multi-turn conversation with an assistant?",
+    "what_good_looks_like": "Sliding window of recent turns, summarizing older turns, retrieving relevant past turns or facts from a memory store, structured state outside the prompt, and token budgeting per component."
+  },
+  {
+    "id": "ai-019",
+    "track": "ai_llm_engineer",
+    "round": "technical",
+    "difficulty": 3,
+    "topics": ["local models", "quantization", "deployment"],
+    "question": "What do you gain and lose by running a quantized open model locally instead of calling a hosted API?",
+    "what_good_looks_like": "Gains privacy, cost control and offline use; loses quality (especially in small models), and takes on hardware, throughput and operations. Explains quantization (fewer bits per weight) and evaluating the quality drop on your own tasks."
+  },
+  {
+    "id": "ai-020",
+    "track": "ai_llm_engineer",
+    "round": "system_design",
+    "difficulty": 2,
+    "topics": ["rag", "customer support", "chatbot"],
+    "question": "Design a support assistant that answers customer questions from a help center and past tickets.",
+    "what_good_looks_like": "Ingestion and chunking pipeline with metadata, hybrid retrieval, grounded answers with citations, handoff to a human when confidence is low, PII handling, feedback capture, and evals for answer quality and deflection rate."
+  },
+  {
+    "id": "ai-021",
+    "track": "ai_llm_engineer",
+    "round": "system_design",
+    "difficulty": 3,
+    "topics": ["rag", "scale", "document qa", "access control"],
+    "question": "Design question answering over ten million internal documents with per-user access permissions.",
+    "what_good_looks_like": "Incremental ingestion and re-embedding, sharded vector index, permission filtering at retrieval time (not after generation), freshness, caching, cost estimates, and offline plus online evaluation."
+  },
+  {
+    "id": "ai-022",
+    "track": "ai_llm_engineer",
+    "round": "system_design",
+    "difficulty": 3,
+    "topics": ["evals", "platform", "regression testing"],
+    "question": "Design an evaluation platform that lets teams test changes to prompts and models before shipping.",
+    "what_good_looks_like": "Versioned datasets, versioned prompts and model configs, deterministic and LLM-judge evaluators, experiment comparison, CI gating on key metrics, production sampling into datasets, and cost controls."
+  },
+  {
+    "id": "ai-023",
+    "track": "ai_llm_engineer",
+    "round": "system_design",
+    "difficulty": 3,
+    "topics": ["agents", "multi-agent", "research assistant"],
+    "question": "Design an agent that researches a topic on the web and writes a cited report.",
+    "what_good_looks_like": "Plan, search, read, synthesize loop with step and cost limits; source deduplication and credibility; citations tied to passages; prompt injection defenses for fetched pages; caching; human review; evals for faithfulness."
+  },
+  {
+    "id": "ai-024",
+    "track": "ai_llm_engineer",
+    "round": "system_design",
+    "difficulty": 2,
+    "topics": ["llm gateway", "rate limits", "fallbacks"],
+    "question": "Design an internal LLM gateway that many product teams call instead of calling model providers directly.",
+    "what_good_looks_like": "Unified API, provider routing and fallbacks, per-team quotas and rate limits, caching, key management, logging with PII controls, cost attribution, and streaming support."
+  },
+  {
+    "id": "ai-025",
+    "track": "ai_llm_engineer",
+    "round": "system_design",
+    "difficulty": 2,
+    "topics": ["classification", "pipeline", "batch processing"],
+    "question": "Design a system that uses an LLM to classify and route a million incoming support emails a day.",
+    "what_good_looks_like": "Queue-based batch processing, a cheaper model or fine-tuned classifier for the bulk, confidence thresholds with human review, structured output, retries and rate limits, monitoring for drift, and labeled data for evaluation."
+  }
+]

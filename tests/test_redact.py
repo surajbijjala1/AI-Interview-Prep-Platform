@@ -1,6 +1,6 @@
 import pytest
 
-from interview_prep.ingest.redact import redact_jd, redact_resume
+from interview_prep.ingest.redact import redact_jd, redact_resume, scrub_contact_info
 
 from .conftest import PERSONA_RESUME
 
@@ -46,3 +46,11 @@ def test_header_words_are_not_treated_as_a_name():
 def test_jd_keeps_company_links_but_drops_recruiter_contact():
     result = redact_jd("Apply at https://acme.com/careers or email jo@acme.com, 212-555-0100.")
     assert result.text == "Apply at https://acme.com/careers or email [EMAIL], [PHONE]."
+
+
+def test_scrub_contact_info_leaves_names_and_titles():
+    text = "Senior Software Engineer\nReach me at jo@example.com or (415) 555-0199, 9 Elm Street, Austin TX 78701"
+    result = scrub_contact_info(text)
+    assert result.text.startswith("Senior Software Engineer\n")  # no name heuristic, so the title survives
+    assert "jo@example.com" not in result.text and "555-0199" not in result.text and "Elm Street" not in result.text
+    assert scrub_contact_info(result.text).counts == {}  # idempotent on already-scrubbed text

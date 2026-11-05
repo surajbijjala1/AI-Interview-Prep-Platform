@@ -1,0 +1,272 @@
+[
+  {
+    "id": "gen-001",
+    "track": "shared",
+    "round": "screen",
+    "difficulty": 1,
+    "topics": ["introduction", "career story"],
+    "question": "Walk me through your background and what led you to apply for this role.",
+    "what_good_looks_like": "A 60-90 second narrative, not a resume recital: two or three relevant highlights, a clear thread connecting past work to this role, and a closing line on why now."
+  },
+  {
+    "id": "gen-002",
+    "track": "shared",
+    "round": "screen",
+    "difficulty": 1,
+    "topics": ["motivation", "company fit"],
+    "question": "Why do you want to work at this company specifically?",
+    "what_good_looks_like": "Specific reasons grounded in the company's product, technical challenges, mission or culture (not generic praise), tied to the candidate's own goals and skills."
+  },
+  {
+    "id": "gen-003",
+    "track": "shared",
+    "round": "screen",
+    "difficulty": 1,
+    "topics": ["motivation", "career change"],
+    "question": "Why are you looking to leave your current role, or what are you looking for in your next one?",
+    "what_good_looks_like": "Forward-looking and positive (growth, scope, domain interest), honest but never badmouthing a current or past employer, and consistent with this role."
+  },
+  {
+    "id": "gen-004",
+    "track": "shared",
+    "round": "screen",
+    "difficulty": 1,
+    "topics": ["career goals", "growth"],
+    "question": "Where do you want your career to be in two to three years?",
+    "what_good_looks_like": "A realistic direction (deeper technical expertise, broader ownership, leadership) that this role plausibly supports, showing self-awareness about current gaps."
+  },
+  {
+    "id": "gen-005",
+    "track": "shared",
+    "round": "screen",
+    "difficulty": 2,
+    "topics": ["role understanding", "strengths"],
+    "question": "Based on the job description, what do you think the first six months in this role would look like, and where would you add value fastest?",
+    "what_good_looks_like": "Reads the JD accurately, names a plausible onboarding path (learn systems, ship a scoped win), and maps two concrete strengths from their experience to the role's needs."
+  },
+  {
+    "id": "gen-006",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 1,
+    "topics": ["proud project", "impact"],
+    "question": "Tell me about the project you're most proud of. What was your specific contribution?",
+    "what_good_looks_like": "Clear context and goal, the candidate's own decisions and work separated from the team's, a measurable outcome, and why it matters to them."
+  },
+  {
+    "id": "gen-007",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 1,
+    "topics": ["failure", "learning"],
+    "question": "Tell me about a time something you worked on failed or didn't go as planned.",
+    "what_good_looks_like": "Owns a real failure (not a disguised success), explains the root cause including their own part, what they did to recover, and a concrete change in how they work now."
+  },
+  {
+    "id": "gen-008",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 1,
+    "topics": ["conflict", "disagreement", "teamwork"],
+    "question": "Describe a disagreement you had with a teammate. How did you resolve it?",
+    "what_good_looks_like": "Shows understanding of the other person's view, a constructive resolution process (data, prototypes, escalation only if needed), a clear outcome, and an intact working relationship."
+  },
+  {
+    "id": "gen-009",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["ambiguity", "problem solving"],
+    "question": "Tell me about a time you had to deliver something when the requirements were unclear.",
+    "what_good_looks_like": "Actively reduced ambiguity (asked the right people, wrote down assumptions, shipped a small version for feedback), made a decision without waiting indefinitely, and adjusted as facts emerged."
+  },
+  {
+    "id": "gen-010",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 1,
+    "topics": ["deadline", "prioritization"],
+    "question": "Tell me about a time you had a tight deadline. How did you decide what to cut or prioritize?",
+    "what_good_looks_like": "Explicit prioritization criteria (user impact, risk, dependencies), communicated trade-offs early to stakeholders, delivered the critical scope, and noted any debt taken on."
+  },
+  {
+    "id": "gen-011",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["production incident", "ownership"],
+    "question": "Tell me about a production issue or bug you caused or helped resolve. What happened, step by step?",
+    "what_good_looks_like": "Calm, structured response (mitigate first, then diagnose), clear communication during the incident, root cause identified, and a durable fix such as tests, alerts or a process change."
+  },
+  {
+    "id": "gen-012",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 1,
+    "topics": ["learning", "new technology"],
+    "question": "Tell me about a time you had to learn a new technology or domain quickly to get something done.",
+    "what_good_looks_like": "A deliberate learning strategy (docs, small experiments, experts), how quickly they became productive, what they delivered with it, and how they checked their understanding."
+  },
+  {
+    "id": "gen-013",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 1,
+    "topics": ["feedback", "growth"],
+    "question": "Tell me about a piece of critical feedback you received. What did you do with it?",
+    "what_good_looks_like": "Specific feedback, a non-defensive reaction, concrete changes in behavior, and evidence that the change stuck or was noticed."
+  },
+  {
+    "id": "gen-014",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["influence", "stakeholders"],
+    "question": "Tell me about a time you convinced others to adopt your idea or approach without having authority over them.",
+    "what_good_looks_like": "Understood what others cared about, built the case with evidence (data, prototype, cost of inaction), handled objections, and earned buy-in rather than forcing it."
+  },
+  {
+    "id": "gen-015",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["technical decision", "trade-offs"],
+    "question": "Describe a significant technical decision you made. What alternatives did you consider, and how did it turn out?",
+    "what_good_looks_like": "Two or more real alternatives with explicit criteria (cost, complexity, performance, team skills), a reasoned choice, and an honest retrospective including what they would change."
+  },
+  {
+    "id": "gen-016",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["pushback", "disagreement", "manager", "scope"],
+    "question": "Tell me about a time you pushed back on a request from a manager, product manager or customer.",
+    "what_good_looks_like": "Pushed back for a sound reason (risk, user harm, cost), offered an alternative rather than just saying no, stayed respectful, and accepted or escalated the final decision appropriately."
+  },
+  {
+    "id": "gen-017",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["mentoring", "teamwork"],
+    "question": "Tell me about a time you helped a teammate grow or get unblocked.",
+    "what_good_looks_like": "Diagnosed what the person actually needed, taught rather than just doing it for them, and shows the result in the teammate's later independence."
+  },
+  {
+    "id": "gen-018",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["process improvement", "ownership"],
+    "question": "Tell me about something you improved that wasn't strictly your job.",
+    "what_good_looks_like": "Noticed a recurring pain (slow builds, flaky tests, manual toil), took initiative without being asked, measured the improvement, and got others to adopt it."
+  },
+  {
+    "id": "gen-019",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["changing requirements", "adaptability"],
+    "question": "Tell me about a time requirements changed late in a project. How did you handle it?",
+    "what_good_looks_like": "Assessed the impact quickly, renegotiated scope or timeline transparently, protected quality where it mattered, and reflected on how to catch such changes earlier."
+  },
+  {
+    "id": "gen-020",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 1,
+    "topics": ["customer focus", "impact"],
+    "question": "Tell me about a time you went out of your way to understand a user's or customer's problem.",
+    "what_good_looks_like": "Direct contact with users or their data, an insight that changed what was built, and evidence that the change helped users."
+  },
+  {
+    "id": "gen-021",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["cross-team collaboration", "dependencies"],
+    "question": "Tell me about a project that depended on another team. How did you keep it on track?",
+    "what_good_looks_like": "Aligned on shared goals and interfaces early, tracked the dependency proactively, resolved friction directly, and delivered without blaming the other team."
+  },
+  {
+    "id": "gen-022",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["data-driven decision", "metrics"],
+    "question": "Tell me about a time you used data or metrics to make or change a decision.",
+    "what_good_looks_like": "Chose the right metric for the question, checked data quality, drew a sound conclusion (aware of correlation versus causation), and acted on it with a measurable result."
+  },
+  {
+    "id": "gen-023",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["mistake", "accountability"],
+    "question": "Tell me about a mistake you made that affected others. How did you communicate it?",
+    "what_good_looks_like": "Raised it quickly and honestly, focused on impact and fix rather than blame, followed through on remediation, and prevented a repeat."
+  },
+  {
+    "id": "gen-024",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["prioritization", "saying no"],
+    "question": "Tell me about a time you had more work than you could handle. What did you do?",
+    "what_good_looks_like": "Made the overload visible early, prioritized explicitly with their manager or stakeholders, said no or deferred items with reasons, and avoided silently dropping work."
+  },
+  {
+    "id": "gen-025",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 3,
+    "topics": ["leadership", "technical direction"],
+    "question": "Tell me about a time you set the technical direction for a team or a large project.",
+    "what_good_looks_like": "Wrote and socialized a clear plan or design, balanced long-term architecture with delivery, brought others along, and adjusted the direction based on results."
+  },
+  {
+    "id": "gen-026",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 3,
+    "topics": ["underperformance", "difficult conversation"],
+    "question": "Tell me about a time a teammate wasn't delivering and it affected your work. What did you do?",
+    "what_good_looks_like": "Raised it directly and privately first with curiosity about causes, offered help, set clear expectations, involved a manager only when needed, and stayed fair throughout."
+  },
+  {
+    "id": "gen-027",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 3,
+    "topics": ["technical debt", "trade-offs"],
+    "question": "Tell me about a time you had to argue for paying down technical debt instead of building features.",
+    "what_good_looks_like": "Quantified the cost of the debt (incidents, velocity, risk), proposed an incremental plan, framed it in business terms, and showed the outcome."
+  },
+  {
+    "id": "gen-028",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 3,
+    "topics": ["strategy", "long-term thinking"],
+    "question": "Tell me about a time you anticipated a problem before it happened and acted on it.",
+    "what_good_looks_like": "Spotted a leading indicator (growth trend, fragile dependency, scaling limit), made the case before it became urgent, and prevented or reduced the impact."
+  },
+  {
+    "id": "gen-029",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 1,
+    "topics": ["teamwork", "remote collaboration"],
+    "question": "How do you keep work moving when you're collaborating with people across time zones or working remotely?",
+    "what_good_looks_like": "Concrete habits: written updates and decisions, clear owners, async-friendly documents, overlap hours used for discussion, and an example where it worked."
+  },
+  {
+    "id": "gen-030",
+    "track": "shared",
+    "round": "behavioral",
+    "difficulty": 2,
+    "topics": ["quality", "testing"],
+    "question": "Tell me about a time you balanced shipping quickly with maintaining quality.",
+    "what_good_looks_like": "Identified which risks mattered (data loss, security, user-facing) versus acceptable shortcuts, used safeguards like feature flags or staged rollouts, and followed up on any shortcuts taken."
+  }
+]

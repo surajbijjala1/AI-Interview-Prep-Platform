@@ -96,3 +96,42 @@ class SessionSetup(BaseModel):
     seniority: Seniority
     feedback_mode: FeedbackMode
     length: SessionLength
+
+
+# --- Question bank (Phase 2) ---------------------------------------------------------------------------------
+
+
+class Round(StrEnum):
+    """Interview rounds; each has its own rubric (SPEC §8)."""
+
+    SCREEN = "screen"  # motivation and fit
+    BEHAVIORAL = "behavioral"
+    TECHNICAL = "technical"  # coding concepts, domain depth, SQL, ...
+    SYSTEM_DESIGN = "system_design"
+
+
+SHARED_TRACK = "shared"  # bank questions (screen + behavioral) asked on every track
+
+
+class BankQuestion(BaseModel):
+    """One curated seed question. The interviewer adapts it to the resume and asks its own follow-ups."""
+
+    id: str = Field(pattern=r"^[a-z]+-\d{3}$", description="Stable ID such as 'be-007'; never reused.")
+    track: str = Field(description=f"A supported RoleTrack value, or '{SHARED_TRACK}'.")
+    round: Round
+    difficulty: int = Field(ge=1, le=3, description="1: new grad/junior, 2: mid, 3: senior.")
+    topics: list[str] = Field(min_length=1, description="Lowercase tags used for retrieval and weak-area memory.")
+    question: str = Field(min_length=10)
+    what_good_looks_like: str = Field(
+        min_length=20, description="Key points a strong answer covers; guides grading and follow-ups."
+    )
+
+
+class QuestionHit(BankQuestion):
+    score: float = Field(description="Relevance to the query, 0-1 (cosine similarity).")
+
+
+class ResumeChunk(BaseModel):
+    text: str
+    chunk_index: int
+    score: float = Field(description="Relevance to the query, 0-1 (cosine similarity).")

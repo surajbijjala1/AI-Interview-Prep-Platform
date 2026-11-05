@@ -7,8 +7,12 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "httpx>=0.28.1",
     "langchain>=1.4.9",
+    "langchain-chroma>=1.1.0",
     "langchain-google-genai>=4.4.3",
+    "langchain-mcp-adapters>=0.3.2",
     "langchain-ollama>=1.1.0",
+    "langchain-text-splitters>=1.1.3",
+    "mcp>=1",
     "pydantic>=2.14.2",
     "pydantic-settings>=2.16.2",
     "pypdf>=6.21.4",
@@ -25,9 +29,18 @@ packages = ["src/interview_prep"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+filterwarnings = [
+    # Chroma warns about collections without its own embedding function; LangChain embeds for it instead.
+    "ignore:legacy embedding function config:DeprecationWarning",
+]
 
 [dependency-groups]
 dev = [
+    "anyio>=4.16.0",
     "fpdf2>=2.9.0",
     "pytest>=9.2.0",
 ]
+
+[project.scripts]
+# `uv run interview-prep-mcp` starts our MCP server on stdio (used by Claude Desktop / Claude Code).
+interview-prep-mcp = "interview_prep.mcp_server.server:main"
