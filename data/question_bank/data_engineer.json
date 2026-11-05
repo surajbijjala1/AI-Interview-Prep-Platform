@@ -1,0 +1,227 @@
+[
+  {
+    "id": "de-001",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["sql", "joins"],
+    "question": "Explain the difference between INNER, LEFT and FULL OUTER joins, and how to find rows in one table with no match in another.",
+    "what_good_looks_like": "Correct semantics for each join, including NULLs for unmatched rows; anti-join with LEFT JOIN ... WHERE right.key IS NULL or NOT EXISTS; warns that NOT IN misbehaves with NULLs."
+  },
+  {
+    "id": "de-002",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["sql", "aggregation", "group by"],
+    "question": "What is the difference between WHERE and HAVING? Write a query for customers with more than five orders last month.",
+    "what_good_looks_like": "WHERE filters rows before grouping, HAVING filters groups after aggregation; filters the date range in WHERE, groups by customer and uses HAVING COUNT(*) > 5."
+  },
+  {
+    "id": "de-003",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["sql", "window functions"],
+    "question": "How do window functions differ from GROUP BY? Write a query for each user's running total of purchases.",
+    "what_good_looks_like": "Window functions keep every row while computing over a partition; SUM(amount) OVER (PARTITION BY user_id ORDER BY purchased_at); knows ROWS versus RANGE frames and ranking functions."
+  },
+  {
+    "id": "de-004",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["sql", "deduplication", "window functions"],
+    "question": "A table has duplicate records per customer ID. How do you keep only the most recent record for each customer?",
+    "what_good_looks_like": "ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY updated_at DESC) and keep row 1; handles ties with a deterministic tiebreaker; mentions QUALIFY where supported."
+  },
+  {
+    "id": "de-005",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["sql", "query optimization", "explain"],
+    "question": "A warehouse query that used to take seconds now takes minutes. How do you speed it up?",
+    "what_good_looks_like": "Reads the query plan; checks partition pruning and clustering, join order and explosion, data skew, selecting only needed columns, filtering early, and stale statistics; validates with before/after measurements."
+  },
+  {
+    "id": "de-006",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 3,
+    "topics": ["sql", "gaps and islands"],
+    "question": "Given daily login events, find each user's longest streak of consecutive login days.",
+    "what_good_looks_like": "Deduplicate to one row per user per day, subtract ROW_NUMBER() from the date to form streak groups, then count per group and take the max per user; handles time zones."
+  },
+  {
+    "id": "de-007",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 3,
+    "topics": ["data modeling", "slowly changing dimensions", "scd type 2"],
+    "question": "How do you implement a Type 2 slowly changing dimension, and how do you query it for a point in time?",
+    "what_good_looks_like": "New row per change with valid_from, valid_to and an is_current flag, using a surrogate key; MERGE logic to close the old row and insert the new one; point-in-time joins with valid_from <= t < valid_to."
+  },
+  {
+    "id": "de-008",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["batch vs streaming", "pipelines"],
+    "question": "When would you build a batch pipeline versus a streaming pipeline?",
+    "what_good_looks_like": "Batch for periodic, complete-window processing that is simpler and cheaper; streaming when freshness matters (fraud, alerting, live dashboards). Considers cost, complexity, late data and micro-batch as a middle ground."
+  },
+  {
+    "id": "de-009",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["idempotency", "backfills", "pipelines"],
+    "question": "How do you make a daily pipeline idempotent and safe to backfill?",
+    "what_good_looks_like": "Partition outputs by date and overwrite whole partitions (or MERGE on keys) instead of appending; parameterize runs by logical date rather than now(); deterministic transforms; rerunning gives the same result."
+  },
+  {
+    "id": "de-010",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["orchestration", "airflow", "dag design"],
+    "question": "How would you structure an Airflow (or similar) DAG for a pipeline with several dependent steps?",
+    "what_good_looks_like": "Small idempotent tasks, clear dependencies, retries with backoff, sensors or data-aware scheduling, keeping heavy compute outside the scheduler, alerting and SLAs, and handling catchup and backfills."
+  },
+  {
+    "id": "de-011",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 3,
+    "topics": ["streaming", "late data", "watermarks"],
+    "question": "In a streaming aggregation, how do you handle events that arrive late or out of order?",
+    "what_good_looks_like": "Event time versus processing time; watermarks to decide when a window is complete; allowed lateness and updating results; side outputs for very late events; the trade-off between latency and completeness."
+  },
+  {
+    "id": "de-012",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["data quality", "testing", "monitoring"],
+    "question": "How do you ensure data quality in your pipelines?",
+    "what_good_looks_like": "Tests for schema, nulls, uniqueness, referential integrity, ranges and freshness (dbt tests, Great Expectations); volume anomaly checks; blocking versus warning checks; data contracts with producers; clear ownership and alerts."
+  },
+  {
+    "id": "de-013",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["file formats", "parquet", "columnar storage"],
+    "question": "Why are columnar formats like Parquet preferred for analytics over CSV or JSON?",
+    "what_good_looks_like": "Reads only the needed columns, better compression, embedded schema and types, min/max statistics for skipping row groups, and splittable files; CSV and JSON are row-based and untyped."
+  },
+  {
+    "id": "de-014",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["partitioning", "clustering", "performance"],
+    "question": "How do you choose a partitioning strategy for a large table?",
+    "what_good_looks_like": "Partition on columns used in filters (often date) with reasonable cardinality; avoid many small files; cluster or sort within partitions for other common filters; consider data skew and file compaction."
+  },
+  {
+    "id": "de-015",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["change data capture", "cdc", "replication"],
+    "question": "What is change data capture, and why is it often better than periodically querying a source table?",
+    "what_good_looks_like": "Reads the database log (for example with Debezium) to stream inserts, updates and deletes; captures deletes and intermediate changes; less load on the source; ordering and schema-change handling remain challenges."
+  },
+  {
+    "id": "de-016",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["data modeling", "star schema", "dimensional modeling"],
+    "question": "Explain fact and dimension tables in a star schema, with an example.",
+    "what_good_looks_like": "Facts hold measurable events at a defined grain (order lines with amount and quantity); dimensions hold descriptive context (customer, product, date); explains why grain must be declared first."
+  },
+  {
+    "id": "de-017",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["data modeling", "normalization", "denormalization"],
+    "question": "When would you denormalize data in a warehouse, and what problems can it cause?",
+    "what_good_looks_like": "Denormalize for query speed and simplicity in analytics; risks include update anomalies, duplicated logic and wide tables that are costly to rebuild; balance with source-of-truth normalized layers."
+  },
+  {
+    "id": "de-018",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["lakehouse", "medallion architecture", "data lake"],
+    "question": "What are bronze, silver and gold layers in a lakehouse, and why separate them?",
+    "what_good_looks_like": "Bronze is raw, append-only data as received; silver is cleaned, deduplicated and conformed; gold is business-level aggregates. Separation enables reprocessing, lineage and clear ownership. Mentions table formats such as Delta or Iceberg."
+  },
+  {
+    "id": "de-019",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 3,
+    "topics": ["exactly-once", "streaming", "kafka"],
+    "question": "What does exactly-once processing mean in a pipeline from Kafka to a warehouse, and how do you achieve it?",
+    "what_good_looks_like": "End-to-end exactly-once requires idempotent or transactional sinks; at-least-once delivery plus deduplication on a key or MERGE upserts; checkpointing offsets with output atomically; Kafka transactions only cover Kafka-to-Kafka."
+  },
+  {
+    "id": "de-020",
+    "track": "data_engineer",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["spark", "data skew", "distributed processing"],
+    "question": "A Spark job has one task that runs far longer than the rest. What is happening and how do you fix it?",
+    "what_good_looks_like": "Data skew on a join or group key; confirm in the Spark UI; fixes include broadcast joins for small tables, salting hot keys, adaptive query execution and filtering or pre-aggregating before the shuffle."
+  },
+  {
+    "id": "de-021",
+    "track": "data_engineer",
+    "round": "system_design",
+    "difficulty": 2,
+    "topics": ["clickstream", "analytics pipeline", "event tracking"],
+    "question": "Design a pipeline that collects website clickstream events and powers daily product analytics dashboards.",
+    "what_good_looks_like": "Event schema and tracking SDK, ingestion through a queue, raw storage in object storage, batch transforms into sessionized and aggregated tables, partitioning, data quality checks, privacy controls and backfill strategy."
+  },
+  {
+    "id": "de-022",
+    "track": "data_engineer",
+    "round": "system_design",
+    "difficulty": 3,
+    "topics": ["real-time features", "fraud detection", "streaming"],
+    "question": "Design a system that computes real-time features (such as transactions per card in the last 10 minutes) for a fraud model.",
+    "what_good_looks_like": "Streaming aggregation with windows and watermarks, a low-latency online feature store, consistency between online and offline features, late data handling, backfills for training, and latency and availability targets."
+  },
+  {
+    "id": "de-023",
+    "track": "data_engineer",
+    "round": "system_design",
+    "difficulty": 3,
+    "topics": ["warehouse migration", "data platform", "validation"],
+    "question": "Design the migration of a company's reporting from an on-premise database to a cloud data warehouse with no disruption to reports.",
+    "what_good_looks_like": "Inventory of sources and consumers, parallel run with automated reconciliation (row counts, checksums, metric diffs), incremental cutover by domain, rollback plan, cost modeling and stakeholder communication."
+  },
+  {
+    "id": "de-024",
+    "track": "data_engineer",
+    "round": "system_design",
+    "difficulty": 2,
+    "topics": ["metrics layer", "semantic layer", "reporting"],
+    "question": "Different teams report different numbers for 'active users'. Design a way to fix this.",
+    "what_good_looks_like": "A single governed definition in a semantic or metrics layer, documented and version-controlled, certified datasets, ownership, tests on metric logic, and migrating dashboards to the shared definitions."
+  },
+  {
+    "id": "de-025",
+    "track": "data_engineer",
+    "round": "system_design",
+    "difficulty": 3,
+    "topics": ["cdc", "replication", "warehouse"],
+    "question": "Design continuous replication of a busy production database into the warehouse with data no more than 15 minutes old.",
+    "what_good_looks_like": "Log-based CDC into a queue, merge into warehouse tables with ordering by log position, handling deletes and schema changes, initial snapshot plus streaming, monitoring lag, and limiting load on production."
+  }
+]

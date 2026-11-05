@@ -1,0 +1,227 @@
+[
+  {
+    "id": "be-001",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["http", "rest", "api design"],
+    "question": "What makes an API endpoint idempotent, and which HTTP methods are expected to be idempotent?",
+    "what_good_looks_like": "Repeating the request has the same effect as doing it once; GET, PUT and DELETE are idempotent, POST is not by default. Mentions idempotency keys for safe POST retries."
+  },
+  {
+    "id": "be-002",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["databases", "indexes", "performance"],
+    "question": "How does a database index speed up queries, and what does it cost?",
+    "what_good_looks_like": "B-tree lookups instead of full scans; costs are slower writes, extra storage and maintenance. Mentions composite index column order and that low-selectivity columns benefit less."
+  },
+  {
+    "id": "be-003",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["databases", "transactions", "isolation levels"],
+    "question": "Explain transaction isolation levels and give an example of an anomaly each one prevents.",
+    "what_good_looks_like": "Read uncommitted, read committed, repeatable read, serializable; dirty reads, non-repeatable reads, phantoms, lost updates or write skew. Knows the default in Postgres or MySQL and the performance trade-off."
+  },
+  {
+    "id": "be-004",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["orm", "n+1 queries", "performance"],
+    "question": "What is the N+1 query problem, and how do you detect and fix it?",
+    "what_good_looks_like": "One query for a list plus one per item; detected with query logs or APM; fixed with joins, eager loading or batching (IN queries, dataloaders)."
+  },
+  {
+    "id": "be-005",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["caching", "redis", "cache invalidation"],
+    "question": "Compare cache-aside, write-through and write-behind caching. How do you handle invalidation and stale data?",
+    "what_good_looks_like": "Explains each pattern's read/write path and consistency; TTLs versus explicit invalidation; race conditions on update; thundering herd and mitigations such as request coalescing or jittered TTLs."
+  },
+  {
+    "id": "be-006",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["concurrency", "race conditions", "locking"],
+    "question": "Two requests try to decrement the same item's inventory at the same time. How do you prevent overselling?",
+    "what_good_looks_like": "Identifies the read-modify-write race; options include atomic UPDATE with a WHERE stock > 0 condition, row locks (SELECT FOR UPDATE), optimistic locking with a version column, or a single-writer queue, with trade-offs."
+  },
+  {
+    "id": "be-007",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["message queues", "kafka", "delivery semantics"],
+    "question": "Explain at-most-once, at-least-once and exactly-once delivery. How would you get effectively-once processing with Kafka or a similar queue?",
+    "what_good_looks_like": "Defines each; at-least-once plus idempotent consumers (dedup keys, upserts) is the practical path; commit offsets after processing; mentions Kafka transactions and their limits."
+  },
+  {
+    "id": "be-008",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["api design", "pagination"],
+    "question": "How would you paginate an API over a large, frequently changing table?",
+    "what_good_looks_like": "Offset pagination is simple but slow and unstable under inserts; cursor or keyset pagination on an indexed, unique ordering is stable and fast. Returns an opaque next cursor."
+  },
+  {
+    "id": "be-009",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["authentication", "jwt", "sessions", "security"],
+    "question": "Compare session-based authentication with JWTs. When would you choose each?",
+    "what_good_looks_like": "Server-side sessions are easy to revoke but need shared storage; JWTs are stateless but hard to revoke, so short expiry plus refresh tokens. Covers secure storage (httpOnly cookies), CSRF and XSS risks."
+  },
+  {
+    "id": "be-010",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["rate limiting", "algorithms", "api design"],
+    "question": "How do token bucket and sliding window rate limiting work, and where would you enforce limits?",
+    "what_good_looks_like": "Token bucket allows bursts up to capacity with a steady refill; sliding window counts requests over a moving interval. Enforced at the gateway or middleware with shared state (Redis); returns 429 with Retry-After."
+  },
+  {
+    "id": "be-011",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["databases", "sql vs nosql", "data modeling"],
+    "question": "How do you decide between a relational database and a NoSQL store for a new service?",
+    "what_good_looks_like": "Driven by access patterns, consistency needs, relationships and scale; relational for transactions and ad-hoc queries, key-value or document stores for simple high-scale access. Avoids hype-driven choices."
+  },
+  {
+    "id": "be-012",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["resilience", "retries", "circuit breaker"],
+    "question": "A downstream service is slow and sometimes failing. How do you keep your service healthy?",
+    "what_good_looks_like": "Timeouts on every call, retries with exponential backoff and jitter only for idempotent operations, circuit breakers, bulkheads or limited concurrency, and graceful degradation or fallbacks."
+  },
+  {
+    "id": "be-013",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 3,
+    "topics": ["microservices", "distributed transactions", "outbox pattern"],
+    "question": "An order service must save an order and publish an 'order created' event. How do you avoid saving without publishing, or publishing without saving?",
+    "what_good_looks_like": "Names the dual-write problem; transactional outbox (write event row in the same transaction, relay publishes it) or change data capture; consumers stay idempotent; mentions sagas for multi-service workflows."
+  },
+  {
+    "id": "be-014",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["observability", "debugging", "latency"],
+    "question": "p99 latency for an endpoint doubled after a deploy. How do you investigate?",
+    "what_good_looks_like": "Checks dashboards and traces to localize (service, query, dependency), compares before/after the deploy, considers rollback first if user impact is high, and confirms the root cause with data rather than guessing."
+  },
+  {
+    "id": "be-015",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 3,
+    "topics": ["databases", "schema migrations", "zero downtime"],
+    "question": "How would you rename a column in a large, heavily used table without downtime?",
+    "what_good_looks_like": "Expand and contract: add the new column, dual-write, backfill in batches, switch reads, stop writing the old column, then drop it. Mentions lock-free migration tooling and backward-compatible deploys."
+  },
+  {
+    "id": "be-016",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["data structures", "hash map", "complexity"],
+    "question": "How does a hash map work internally, and what is its time complexity?",
+    "what_good_looks_like": "Hash function to bucket index, collision handling (chaining or open addressing), resizing when load factor grows; average O(1), worst case O(n) with many collisions."
+  },
+  {
+    "id": "be-017",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 2,
+    "topics": ["concurrency", "async", "threads"],
+    "question": "When would you use async I/O versus threads or processes in a backend service?",
+    "what_good_looks_like": "Async for many concurrent I/O-bound operations with low overhead; threads for blocking libraries; processes for CPU-bound work (or the GIL in Python). Warns about blocking calls inside an event loop."
+  },
+  {
+    "id": "be-018",
+    "track": "backend_swe",
+    "round": "technical",
+    "difficulty": 1,
+    "topics": ["databases", "connection pooling"],
+    "question": "What is database connection pooling, and what goes wrong without it?",
+    "what_good_looks_like": "Reuses open connections instead of paying setup cost per request; without it you see latency and exhausted connection limits. Mentions pool sizing and external poolers such as PgBouncer."
+  },
+  {
+    "id": "be-019",
+    "track": "backend_swe",
+    "round": "system_design",
+    "difficulty": 1,
+    "topics": ["url shortener", "hashing", "caching"],
+    "question": "Design a URL shortening service.",
+    "what_good_looks_like": "Clarifies scale and read/write ratio; key generation (counter with base62 or hashing with collision handling); key-value storage; heavy caching for redirects; 301 versus 302; analytics off the hot path."
+  },
+  {
+    "id": "be-020",
+    "track": "backend_swe",
+    "round": "system_design",
+    "difficulty": 2,
+    "topics": ["rate limiter", "distributed systems", "redis"],
+    "question": "Design a rate limiter shared by all instances of an API.",
+    "what_good_looks_like": "Requirements (per user/key, limits, accuracy); algorithm choice; Redis with atomic operations or Lua scripts; behavior when Redis is down (fail open or closed); headers and 429 responses; multi-region concerns."
+  },
+  {
+    "id": "be-021",
+    "track": "backend_swe",
+    "round": "system_design",
+    "difficulty": 2,
+    "topics": ["notifications", "queues", "fan-out"],
+    "question": "Design a notification service that sends email, SMS and push notifications.",
+    "what_good_looks_like": "API to enqueue, per-channel workers, provider abstraction with retries and fallbacks, user preferences and opt-outs, deduplication, rate limiting per user, templates, and delivery status tracking."
+  },
+  {
+    "id": "be-022",
+    "track": "backend_swe",
+    "round": "system_design",
+    "difficulty": 3,
+    "topics": ["news feed", "fan-out", "caching"],
+    "question": "Design the home feed for a social app with millions of users.",
+    "what_good_looks_like": "Fan-out on write versus on read, a hybrid for celebrity accounts; feed cache per user; ranking; pagination; storage choices; handling deletes and privacy changes; capacity estimates."
+  },
+  {
+    "id": "be-023",
+    "track": "backend_swe",
+    "round": "system_design",
+    "difficulty": 3,
+    "topics": ["job scheduler", "distributed systems", "reliability"],
+    "question": "Design a distributed job scheduler that runs millions of delayed and recurring jobs reliably.",
+    "what_good_looks_like": "Durable job store indexed by run time, workers claiming jobs with leases or locks, at-least-once execution with idempotent jobs, retries and dead-letter handling, partitioning, and monitoring for missed runs."
+  },
+  {
+    "id": "be-024",
+    "track": "backend_swe",
+    "round": "system_design",
+    "difficulty": 3,
+    "topics": ["payments", "ledger", "idempotency", "consistency"],
+    "question": "Design the backend for processing payments and keeping account balances correct.",
+    "what_good_looks_like": "Double-entry ledger with immutable entries, idempotency keys on every request, strong consistency for balances, state machine for payment status, reconciliation with the payment provider, and audit logging."
+  },
+  {
+    "id": "be-025",
+    "track": "backend_swe",
+    "round": "system_design",
+    "difficulty": 2,
+    "topics": ["file upload", "object storage", "cdn"],
+    "question": "Design a service where users upload and share large files.",
+    "what_good_looks_like": "Pre-signed URLs to object storage, multipart and resumable uploads, metadata in a database, async processing (virus scan, thumbnails), CDN for downloads, access control and expiring share links."
+  }
+]

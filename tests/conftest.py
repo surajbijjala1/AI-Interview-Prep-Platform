@@ -1,8 +1,15 @@
+import math
+import re
+import zlib
 from pathlib import Path
 
 import pytest
 from fpdf import FPDF
+from langchain_core.embeddings import Embeddings
 from langchain_core.runnables import RunnableLambda
+
+from interview_prep.config import Settings
+from interview_prep.storage import Storage, open_storage
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -54,3 +61,40 @@ class FakeStructuredLLM:
 @pytest.fixture
 def persona_pdf() -> bytes:
     return make_pdf(PERSONA_RESUME)
+
+
+class KeywordEmbeddings(Embeddings):
+    """Bag-of-words vectors: texts sharing words are similar. Lets retrieval tests run without Ollama.
+
+    Deterministic (crc32, not Python's per-process salted hash) and also records every text it embeds.
+    """
+
+    def __init__(self, dims: int = 512):
+        self.dims = dims
+        self.calls: list[str] = []
+
+    def _embed(self, text: str) -> list[float]:
+        self.calls.append(text)
+        vector = [0.0] * self.dims
+        for word in re.findall(r"[a-z0-9]+", text.lower()):
+            if len(word) > 2:
+                vector[zlib.crc32(word.encode()) % self.dims] += 1.0
+        norm = math.sqrt(sum(v * v for v in vector)) or 1.0
+        return [v / norm for v in vector]
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return [self._embed(t) for t in texts]
+
+    def embed_query(self, text: str) -> list[float]:
+        return self._embed(text)
+
+
+@pytest.fixture
+def embeddings() -> KeywordEmbeddings:
+    return KeywordEmbeddings()
+
+
+@pytest.fixture
+def storage(tmp_path, embeddings) -> Storage:
+    """Real SQLite + Chroma in a temp dir, with fake embeddings and the real question bank."""
+    return open_storage(Settings(data_dir=tmp_path, embedding_model="keyword-test"), embeddings=embeddings)

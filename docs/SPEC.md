@@ -144,10 +144,13 @@ src/interview_prep/
   ingest/              pdf.py, redact.py, resume.py, jd.py
   research/            subgraph, query planning, synthesis, fallback
   graph/               state.py, nodes/, build.py
+  embeddings.py        Ollama embeddings (nomic task prefixes)
+  question_bank.py     load/validate the bank, fingerprint for re-indexing
+  storage/             db.py (SQLite + migrations), vectors.py (Chroma)
+  mcp_server/          our interview-prep MCP server (`uv run interview-prep-mcp`)
   mcp_client.py        MCP server registry + lifecycle
-mcp_server/server.py   our interview-prep MCP server
-app/                   Home.py + pages/ (Setup, Research, Interview, Report, History)
-data/question_bank/    behavioral.json, backend_swe.json, ai_llm_eng.json, data_eng.json
+app/                   Home.py + pages/ (Setup, Research, Interview, Report, History, Question bank test page)
+data/question_bank/    shared.json (screen + behavioral), backend_swe.json, ai_llm_engineer.json, data_engineer.json
 tests/                 pytest, fake chat models, no network
 evals/                 synthetic personas + LangSmith eval runner
 docs/                  SPEC.md, learning/phase-N.md, mcp-clients.md
@@ -167,6 +170,10 @@ It owns all **stateful data and retrieval**. LLM reasoning stays in the graph, s
 | `get_weak_areas(track)` / `get_answered_questions(track)` | Memory for planning |
 | `save_turn(...)` / `save_report(...)` / `list_sessions()` / `get_report(session_id)` | Session persistence |
 | `delete_session(session_id)` / `delete_all_data()` | Data deletion |
+
+Built so far (Phase 2): `search_question_bank`, `get_question` (added), the `question-bank://{track}` resource
+(added), `extract_resume_text`, `index_resume`, `search_resume`, `delete_session` and `delete_all_data(confirm)`.
+Research tools arrive in Phase 3, and memory and session tools in Phase 5, once their schemas exist.
 
 `docs/mcp-clients.md` will document how to connect it to Claude Desktop and Claude Code (for example, "find
 Kafka questions in my bank" or "what are my weak areas?").

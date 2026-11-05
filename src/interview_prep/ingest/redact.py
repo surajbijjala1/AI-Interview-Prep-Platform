@@ -58,6 +58,12 @@ def _redact_contact_info(result: Redacted, *, urls: bool) -> None:
     _sub(PHONE, "[PHONE]", result)
 
 
+def _redact_contact_and_address(result: Redacted) -> None:
+    _redact_contact_info(result, urls=True)
+    _sub(STREET_ADDRESS, "[ADDRESS]", result)
+    _sub(STATE_ZIP, "[ADDRESS]", result)
+
+
 def redact_resume(text: str) -> Redacted:
     """Remove name, email, phone, links and street address from resume text."""
     result = Redacted(text)
@@ -66,9 +72,18 @@ def redact_resume(text: str) -> Redacted:
         parts = [name] + [p for p in name.split() if len(p.strip(".")) > 2]
         for part in parts:
             _sub(re.compile(rf"\b{re.escape(part)}\b"), "[NAME]", result)
-    _redact_contact_info(result, urls=True)
-    _sub(STREET_ADDRESS, "[ADDRESS]", result)
-    _sub(STATE_ZIP, "[ADDRESS]", result)
+    _redact_contact_and_address(result)
+    return result
+
+
+def scrub_contact_info(text: str) -> Redacted:
+    """Remove email, links, phone and street address but leave names alone.
+
+    A second line of defense for text that should already be redacted, where re-running name detection would
+    misfire (e.g. treating "Senior Software Engineer" on the first line as a name).
+    """
+    result = Redacted(text)
+    _redact_contact_and_address(result)
     return result
 
 

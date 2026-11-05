@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     gemini_requests_per_minute: int = 10
     ollama_model: str = "llama3.2"
     ollama_base_url: str = "http://localhost:11434"
+    # Embeddings always run locally on Ollama, whichever chat provider is selected.
+    embedding_model: str = "nomic-embed-text"
+    # SQLite DB and Chroma vectors live here (gitignored).
+    data_dir: Path = ROOT / ".data"
 
 
 @lru_cache
